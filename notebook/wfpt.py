@@ -125,6 +125,13 @@ def wfpt(t, v, a, w, err=.0001):
     if t <= 0.0:
         return 0.0
 
+    ### Modification
+    if np.isnan(v):
+        return 0.0
+    
+    if v==np.inf or v==-np.inf:
+        return 0.0
+    
     # make w and v 2d
     w = np.atleast_2d(w)
     v = np.atleast_2d(v)
@@ -162,7 +169,7 @@ def wfpt(t, v, a, w, err=.0001):
         K = np.ceil(ks)
         # along=seq(-floor((K-1)/2),ceiling((K-1)/2),1)
         along = np.arange(-np.floor((K-1)/2),
-                          np.ceil((K-1)/2))[:, np.newaxis]
+                          np.ceil((K-1)/2)+1)[:, np.newaxis] ##Added 1 # 
         # for(k in 1:length(along)){
         # p=p+(w+2*along[k])*exp(-((w+2*along[k])^2)/2/tt)
         # }
@@ -191,15 +198,15 @@ def wfpt(t, v, a, w, err=.0001):
     
     ### Modification
     xxx=np.exp(-v * a * w - (v**2) * t / 2)
-    if xxx==np.inf :
+    if xxx==np.inf or np.isnan(xxx):
         return 0.0
+    
     
     # out=p*exp(-v*a*w -(v^2)*t/2)/(a^2)
     out = p * np.exp(-v * a * w - (v**2) * t / 2) / (a**2)
     
-    
-    
-    
+    ## Debug
+    #print((ks,kl,xxx,p,out,out.mean()), flush=True)
     
     return out.mean()
 
